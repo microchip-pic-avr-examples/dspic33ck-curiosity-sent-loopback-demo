@@ -38,6 +38,7 @@ The project depicts the usage of SENT module demo with loopback data transfer fr
 
 **Serial Port Setup**
 ![Serial](images/serial_config.PNG) 
+
 ![SerialPort](images/serial_port_config.PNG)
 
 ## MCC Configurations
@@ -52,7 +53,7 @@ The project depicts the usage of SENT module demo with loopback data transfer fr
 ![Serial](images/uart_config.PNG)
 
 - Pins Configuration :
-![Pins](images/pins_config.PNG)
+![Pins](images/pins_config.png)
 
 
 

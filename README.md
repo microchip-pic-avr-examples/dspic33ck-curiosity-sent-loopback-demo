@@ -37,8 +37,8 @@ The project depicts the usage of SENT module demo with loopback data transfer fr
 - Build and program the device
 
 **Serial Port Setup**
-![Serial](images/serial_config.PNG) 
 
+![Serial](images/serial_config.PNG) <br> 
 ![SerialPort](images/serial_port_config.PNG)
 
 ## MCC Configurations

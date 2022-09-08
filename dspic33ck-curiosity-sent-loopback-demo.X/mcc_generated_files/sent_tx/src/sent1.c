@@ -60,19 +60,27 @@ const struct SENT_TRANSMIT_INTERFACE SENT_Transmitter = {
     .TransmitStatusGet      = &SENT1_TransmitStatusGet,
     .TransmitCompleteCallbackRegister = &SENT1_TransmitCompleteCallbackRegister,
     .ErrorCallbackRegister = &SENT1_ErrorCallbackRegister,
-    .Tasks                  = &SENT1_Tasks,
+    .Tasks                  = NULL,
 };
 
 // Section: SENT1 Module APIs
 
 void SENT1_Initialize(void)
 {
-    // PPP disabled; TXPOL Non Inverted; SNTSIDL disabled; PS Divide-by-1; SNTEN disabled; SPCEN disabled; TXM Asynchronous; CRCEN disabled; RCVEN Transmitter; NIBCNT 6; 
-    SENT1CON1 = 0x6;
+    // PPP disabled; TXPOL Non Inverted; SNTSIDL disabled; PS Divide-by-1; SNTEN disabled; SPCEN disabled; TXM Asynchronous; CRCEN enabled; RCVEN Transmitter; NIBCNT 6; 
+    SENT1CON1 = 0x106;
     // SENTCON2 11; 
     SENT1CON2 = 0xB;
     // SENTCON3 0x0; 
     SENT1CON3 = 0x0;
+    // clear the rx/tx interrupt flag
+    IFS5bits.SENT1IF = 0;
+    // enable the rx/tx interrupt
+    IEC5bits.SENT1IE = 1;
+    // clear the error interrupt flag
+    IFS5bits.SENT1EIF = 0;
+    // enable the error interrupt
+    IEC5bits.SENT1EIE = 1;
     
     SENT1_TransmitCompleteCallbackRegister(&SENT1_TransmitCompleteCallback);
     SENT1_ErrorCallbackRegister(&SENT1_ErrorCallback);
@@ -83,6 +91,12 @@ void SENT1_Initialize(void)
 void SENT1_Deinitialize(void)
 {
     SENT1_Disable(); 
+    
+    IFS5bits.SENT1IF = 0;
+    IEC5bits.SENT1IE = 0;
+    
+    IFS5bits.SENT1EIF = 0;
+    IEC5bits.SENT1EIE = 0;
     
     SENT1CON1 = 0x0;
     SENT1CON2 = 0x0;
@@ -106,6 +120,7 @@ void SENT1_TransmitModeSet(enum SENT_TRANSMIT_MODE mode)
 
 void SENT1_Transmit(const struct SENT_DATA_TRANSMIT *sentData)
 {
+    bDataTransmitted = false;
     SENT1DATHbits.STAT = sentData->status;
     SENT1DATHbits.DATA1 = sentData->data1;
     SENT1DATHbits.DATA2 = sentData->data2;
@@ -125,11 +140,7 @@ void SENT1_Transmit(const struct SENT_DATA_TRANSMIT *sentData)
 
 bool SENT1_IsTransmissionComplete(void)
 {
-    while(IFS5bits.SENT1IF == 1)
-    {
-      IFS5bits.SENT1IF = 0;
-    }
-    return true;
+    return bDataTransmitted;
 }
 
 enum SENT_TRANSMIT_STATUS SENT1_TransmitStatusGet(void)
@@ -162,53 +173,44 @@ void __attribute__ ((weak)) SENT1_ErrorCallback(void)
    
 } 
 
-
-
-void SENT1_Tasks ( void )
+void __attribute__ ( ( interrupt, no_auto_psv ) ) _SENT1Interrupt( void )
 {
-    if(IFS5bits.SENT1IF == 1)
+    if(SENT1_TransmitCompleteHandler != NULL )
     {
-        // SENT1 callback function 
-        if(SENT1_TransmitCompleteHandler != NULL )
-        {
-            (*SENT1_TransmitCompleteHandler)();
-        }
-        if(SENT1CON1bits.TXM == 0)
-        {
-            bDataTransmitted = true;
-        }
-        else if(SENT1STATbits.SYNC == 0)
-        {
-            bDataTransmitted = true;
-        }    
-        else
-        {
-            bDataTransmitted = false;
-        }
-        // clear the SENT1 interrupt flag
-        IFS5bits.SENT1IF = 0;
+        (*SENT1_TransmitCompleteHandler)();
     }
-    if(IFS5bits.SENT1EIF == 1)
+    if(SENT1CON1bits.TXM == 0)
     {
-        // SENT1 Error callback function 
-        if(SENT1_ErrorHandler != NULL )
-        {
-            (*SENT1_ErrorHandler)();
-        }
-        
-        if(SENT1STATbits.FRMERR == 1)
-        {
-            SENT1STATbits.FRMERR = 0;
-        }
-        if(SENT1STATbits.CRCERR == 1)
-        {
-            SENT1STATbits.CRCERR = 0;
-        }
-        
-        // clear the SENT1 IFS5bits.SENT1EIF interrupt flag
-        IFS5bits.SENT1EIF = 0;
+        bDataTransmitted = true;
     }
+    else if(SENT1STATbits.SYNC == 0)
+    {
+        bDataTransmitted = true;
+    }    
+    else
+    {
+        bDataTransmitted = false;
+    }
+    IFS5bits.SENT1IF = 0;
 }
+
+void __attribute__ ( ( interrupt, no_auto_psv ) ) _SENT1EInterrupt (void)
+{
+    if(SENT1_ErrorHandler != NULL )
+    {
+        (*SENT1_ErrorHandler)();
+    }
+    if(SENT1STATbits.FRMERR == 1)
+    {
+        SENT1STATbits.FRMERR = 0;
+    }
+    if(SENT1STATbits.CRCERR == 1)
+    {
+        SENT1STATbits.CRCERR = 0;
+    }
+    IFS5bits.SENT1EIF = 0;
+}
+
 
 /**
  End of File

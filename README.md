@@ -19,7 +19,6 @@ The project depicts the usage of SENT module demo with loopback data transfer fr
 - Device Family Pack: dsPIC33CK-MP_DFP v1.8.224
 - [MPLAB® Code Configurator (MCC) 5.1.2](https://www.microchip.com/mcc) or newer
 - Tera Term or any other serial terminal with the following settings
-![Serial](images/serial_config.png)
 
 ## Hardware Used
 
@@ -30,19 +29,38 @@ The project depicts the usage of SENT module demo with loopback data transfer fr
 **Hardware Setup**
 
 - Connect a micro-USB cable to port `J7` of Curiosity board to USB port of PC
-- Connect a jumper wire from SENT_Tx (RC0) - SENT_Rx (RC1)
+- Connect a jumper wire from SENT_Tx (RD0) - SENT_Rx (RD1)
 
 **MPLAB® X IDE Setup**
 
 - Open the `dspic33ck-curiosity-sent-loopback-demo.X` project in MPLAB® X IDE
 - Build and program the device
 
+**Serial Port Setup**
+![Serial](images/serial_config.PNG) 
+![SerialPort](images/serial_port_config.PNG)
+
+## MCC Configurations
+
+- SENT TX Configuration :
+![SentTx](images/sent_tx_config.PNG)
+
+- SENT RX Configuration :
+![Serial](images/sent_rx_config.PNG)
+
+- UART Configuration :
+![Serial](images/uart_config.PNG)
+
+- Pins Configuration :
+![Pins](images/pins_config.PNG)
+
+
+
 ## Operation
 
 - The demo auto triggers two operation modes of SENT - Asynchronous and Synchronous, once you program the device.
-- In the Initialization  state, the SENT_TX and SENT_RX peripherals gets initialized.
-- Very next step is the Asynchronous mode operation where the SENT_TX sends the data and SENT_RX peripheral receives the same data.
-- Succeeding the state comes the Synchronous mode of operation.
+- In Asynchronous mode operation where the SENT_TX sends the data and SENT_RX peripheral receives the same data. On success the result will be printed on terminal and green LED starts glowing.
+- Succeeding the state comes the Synchronous mode of operation, which also sends the data from SENT_Transmitter and receives in SENT_Receiver. On success the result will be printed on terminal and green LED starts glowing.
 - Finally the deinitialization state comes where the peripherals would get properly deinitialized. 
-![Serial_Output](images/serial_output.png)
+![SerialOutput](images/serial_output.PNG)
 

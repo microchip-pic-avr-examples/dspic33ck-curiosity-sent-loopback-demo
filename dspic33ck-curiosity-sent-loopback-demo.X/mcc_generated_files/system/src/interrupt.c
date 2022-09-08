@@ -45,10 +45,50 @@ void INTERRUPT_Initialize(void)
     // Priority: 1
     IPC11bits.DMTIP = 1;
     
+    // SENT2E: SENT2 Error
+    // Priority: 1
+    IPC22bits.SENT2EIP = 1;
+    
+    // SENT2: SENT2 TX/RX
+    // Priority: 1
+    IPC22bits.SENT2IP = 1;
+    
+    // SENT1E: SENT1 Error
+    // Priority: 1
+    IPC21bits.SENT1EIP = 1;
+    
+    // SENT1: SENT1 TX/RX
+    // Priority: 1
+    IPC21bits.SENT1IP = 1;
+    
+    // U1EVT: UART1 Event
+    // Priority: 1
+    IPC47bits.U1EVTIP = 1;
+    
+    // U1E: UART1 Error
+    // Priority: 1
+    IPC12bits.U1EIP = 1;
+    
+    // U1TX: UART1 TX
+    // Priority: 1
+    IPC3bits.U1TXIP = 1;
+    
+    // U1RX: UART1 RX
+    // Priority: 1
+    IPC2bits.U1RXIP = 1;
+    
 }
 
 void INTERRUPT_Deinitialize(void)
 {
     //POR default value of priority
     IPC11bits.DMTIP = 4;
+    IPC22bits.SENT2EIP = 4;
+    IPC22bits.SENT2IP = 4;
+    IPC21bits.SENT1EIP = 4;
+    IPC21bits.SENT1IP = 4;
+    IPC47bits.U1EVTIP = 4;
+    IPC12bits.U1EIP = 4;
+    IPC3bits.U1TXIP = 4;
+    IPC2bits.U1RXIP = 4;
 }

@@ -18,10 +18,18 @@
     EXCEED AMOUNT OF FEES, IF ANY, YOU PAID DIRECTLY TO MICROCHIP FOR 
     THIS SOFTWARE.
 */
+
+#include <stdbool.h>
+#include <libpic30.h>
+#include <xc.h>
+
 #include "mcc_generated_files/system/system.h"
 #include "mcc_generated_files/system/pins.h"
 #include "mcc_generated_files/sent_tx/sent1.h"
 #include "mcc_generated_files/sent_rx/sent2.h"
+
+
+#define FCY CLOCK_SystemFrequencyGet()
 
 const volatile struct SENT_TRANSMIT_INTERFACE *sentTx = &SENT_Transmitter;
 const volatile struct SENT_RECEIVE_INTERFACE *sentRx = &SENT_Receiver;
@@ -36,29 +44,29 @@ bool SENT_SynchronousTxandRx();
 bool compare(struct SENT_DATA_TRANSMIT *txdata, struct SENT_DATA_RECEIVE *rxdata);
 
 enum SENT_STATE{
-    INIT_STATE = 0,
+    SENT_START_STATE = 0,
     SENT_ASYNC_STATE,
     SENT_SYNC_STATE,
-    DEINIT_STATE,
-    EXIT_STATE,
+    SENT_DEINIT_STATE,
+    SENT_EXIT_STATE,
 };
 
 int main(void)
 {
     bool sent_status = false;
-    uint8_t current_state = (uint8_t)INIT_STATE;
+    uint8_t current_state = (uint8_t)SENT_START_STATE;
     SYSTEM_Initialize();
-    printf("#########################################\r\n");
-    printf("           SENT LOOPBACK DEMO            \r\n");
-    printf("#########################################\r\n\r\n");
+
+    
     while(1)
     {
         switch(current_state) 
        {    
-            case INIT_STATE:
-                SENT_TxRxInitialization();
-                printf("SENT Initialization done!\r\n");
-                printf("------------------------------------------\r\n\r\n");
+            case SENT_START_STATE:
+                printf("#########################################\r\n");
+                printf("           SENT LOOPBACK DEMO            \r\n");
+                printf("#########################################\r\n");
+                __delay32(10000);
                 current_state = SENT_ASYNC_STATE;
                 break;
             case SENT_ASYNC_STATE:
@@ -67,26 +75,24 @@ int main(void)
                sent_status ? printf("SENT Asynchronous Success\r\n") : printf("SENT Asynchronous Unsuccessful\r\n");
                printf("------------------------------------------\r\n\r\n");
                current_state = SENT_SYNC_STATE;
-               sent_status = false;
+               sent_status = false;             
                break;
            case SENT_SYNC_STATE:
                sent_status = SENT_SynchronousTxandRx();
                sent_status ? UserLEDGreen_SetHigh() : UserLEDRed_SetHigh();
                sent_status ? printf("SENT Synchronous Success\r\n") : printf("SENT Synchronous Unsuccessful\r\n");
                printf("------------------------------------------\r\n\r\n");
-               current_state = DEINIT_STATE;
+               current_state = SENT_DEINIT_STATE;
                sent_status = false;
                break;
-           case DEINIT_STATE:
+           case SENT_DEINIT_STATE:
                SENT_TxRxDeInitialization();
-               current_state = EXIT_STATE;
+               current_state = SENT_EXIT_STATE;
                printf("SENT DeInitialization Successful\r\n");
                printf("#########################################\r\n");
                break;
-            case EXIT_STATE:
-                break;
-                
-                
+            case SENT_EXIT_STATE:
+                break;    
        }
     }    
 }
@@ -142,8 +148,7 @@ bool SENT_AsynchronousTxandRx()
     bool result = false;
     struct SENT_DATA_TRANSMIT sentDataTransmit;
     struct SENT_DATA_RECEIVE sentDataReceive;
-//    sentTx->TransmitCompleteCallbackRegister(&IsTxComplete);
-//    sentRx->ReceiveCompleteCallbackRegister(&IsRxComplete);
+
     sentDataTransmit.status = 7;
     sentDataTransmit.data1 = 1;
     sentDataTransmit.data2 = 2;
@@ -151,8 +156,6 @@ bool SENT_AsynchronousTxandRx()
     sentDataTransmit.data4 = 4;
     sentDataTransmit.data5 = 5;
     sentDataTransmit.data6 = 6;
-    printf("Data Sent via Tx : \r\n");
-    printf("Status : %u\r\n", sentDataTransmit.status);
 
     sentTx->Transmit(&sentDataTransmit);
     
@@ -167,6 +170,7 @@ bool SENT_AsynchronousTxandRx()
 
 bool SENT_SynchronousTxandRx() 
 {
+    bool result = false;
     struct SENT_DATA_TRANSMIT sentDataTransmit;
     struct SENT_DATA_RECEIVE sentDataReceive;
 
@@ -182,8 +186,10 @@ bool SENT_SynchronousTxandRx()
     sentTx->Transmit(&sentDataTransmit);
     while (sentTx->IsTransmissionComplete() == false);
     while (sentRx->IsDataReceived() == false);
-    sentDataReceive = sentRx->Receive();
     
-    return compare(&sentDataTransmit, &sentDataReceive);
+    sentDataReceive = sentRx->Receive();
+    result = compare(&sentDataTransmit, &sentDataReceive);
+    
+    return result;
 
 }

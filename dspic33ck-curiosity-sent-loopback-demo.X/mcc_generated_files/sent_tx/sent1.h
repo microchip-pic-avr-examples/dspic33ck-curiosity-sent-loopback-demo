@@ -105,11 +105,6 @@ extern const struct SENT_TRANSMIT_INTERFACE SENT_Transmitter;
  * @brief    This macro defines the Custom Name for \ref SENT1_ErrorCallbackRegister API
  */
 #define SENT_Transmitter_ErrorCallbackRegister SENT1_ErrorCallbackRegister
-/**
- * @ingroup  senttxdriver
- * @brief    This macro defines the Custom Name for \ref SENT1_Tasks API
- */
-#define SENT_Transmitter_Tasks SENT1_Tasks
 // Section: SENT1 Module APIs
  
 /**
@@ -209,12 +204,6 @@ void SENT1_ErrorCallbackRegister(void* handler);
 void SENT1_ErrorCallback(void);
 
 
-/**
- * @ingroup  senttxdriver
- * @brief    This function is used to implement the tasks for polled implementations
- * @return   none  
- */
-void SENT1_Tasks(void);
 
 #endif  // SENT1_H
 /**

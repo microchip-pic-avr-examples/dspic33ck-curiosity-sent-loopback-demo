@@ -55,109 +55,145 @@
            using the 'Custom Name' field. Application specific name allows the 
            API Portability.
 */
-extern const struct UART_INTERFACE UART_Serial;
+extern const struct UART_INTERFACE UART1_Drv;
 
 /**
  * @ingroup  uartdriver
  * @brief    This macro defines the Custom Name for \ref UART1_Initialize API
  */
-#define UART_Serial_Initialize UART1_Initialize
+#define UART1_Drv_Initialize UART1_Initialize
 
 /**
  * @ingroup  uartdriver
  * @brief    This macro defines the Custom Name for \ref UART1_Deinitialize API
  */
-#define UART_Serial_Deinitialize UART1_Deinitialize
+#define UART1_Drv_Deinitialize UART1_Deinitialize
 
 /**
  * @ingroup  uartdriver
  * @brief    This macro defines the Custom Name for \ref UART1_Read API
  */
-#define UART_Serial_Read UART1_Read
+#define UART1_Drv_Read UART1_Read
 
 /**
  * @ingroup  uartdriver
  * @brief    This macro defines the Custom Name for \ref UART1_Write API
  */
-#define UART_Serial_Write UART1_Write
+#define UART1_Drv_Write UART1_Write
 
 /**
  * @ingroup  uartdriver
  * @brief    This macro defines the Custom Name for \ref UART1_IsRxReady API
  */
-#define UART_Serial_IsRxReady UART1_IsRxReady
+#define UART1_Drv_IsRxReady UART1_IsRxReady
 
 /**
  * @ingroup  uartdriver
  * @brief    This macro defines the Custom Name for \ref UART1_IsTxReady API
  */
-#define UART_Serial_IsTxReady UART1_IsTxReady
+#define UART1_Drv_IsTxReady UART1_IsTxReady
 
 /**
  * @ingroup  uartdriver
  * @brief    This macro defines the Custom Name for \ref UART1_IsTxDone API
  */
-#define UART_Serial_IsTxDone UART1_IsTxDone
+#define UART1_Drv_IsTxDone UART1_IsTxDone
 
 /**
  * @ingroup  uartdriver
  * @brief    This macro defines the Custom Name for \ref UART1_TransmitEnable API
  */
-#define UART_Serial_TransmitEnable UART1_TransmitEnable
+#define UART1_Drv_TransmitEnable UART1_TransmitEnable
 
 /**
  * @ingroup  uartdriver
  * @brief    This macro defines the Custom Name for \ref UART1_TransmitDisable API
  */
-#define UART_Serial_TransmitDisable UART1_TransmitDisable
+#define UART1_Drv_TransmitDisable UART1_TransmitDisable
 
 /**
  * @ingroup  uartdriver
  * @brief    This macro defines the Custom Name for \ref UART1_AutoBaudSet API
  */
-#define UART_Serial_AutoBaudSet UART1_AutoBaudSet
+#define UART1_Drv_AutoBaudSet UART1_AutoBaudSet
 
 /**
  * @ingroup  uartdriver
  * @brief    This macro defines the Custom Name for \ref UART1_AutoBaudQuery API
  */
-#define UART_Serial_AutoBaudQuery UART1_AutoBaudQuery
+#define UART1_Drv_AutoBaudQuery UART1_AutoBaudQuery
 
 /**
  * @ingroup  uartdriver
  * @brief    This macro defines the Custom Name for \ref UART1_AutoBaudEventEnableGet API
  */
-#define UART_Serial_AutoBaudEventEnableGet UART1_AutoBaudEventEnableGet
+#define UART1_Drv_AutoBaudEventEnableGet UART1_AutoBaudEventEnableGet
 
 /**
  * @ingroup  uartdriver
  * @brief    This macro defines the Custom Name for \ref UART1_ErrorGet API
  */
-#define UART_Serial_ErrorGet UART1_ErrorGet
+#define UART1_Drv_ErrorGet UART1_ErrorGet
 
 /**
  * @ingroup  uartdriver
  * @brief    This macro defines the Custom Name for \ref UART1_BRGCountSet API
  */
-#define UART_Serial_BRGCountSet UART1_BRGCountSet
+#define UART1_Drv_BRGCountSet UART1_BRGCountSet
 
 /**
  * @ingroup  uartdriver
  * @brief    This macro defines the Custom Name for \ref UART1_BRGCountGet API
  */
-#define UART_Serial_BRGCountGet UART1_BRGCountGet
+#define UART1_Drv_BRGCountGet UART1_BRGCountGet
 
 /**
  * @ingroup  uartdriver
  * @brief    This macro defines the Custom Name for \ref UART1_BaudRateSet API
  */
-#define UART_Serial_BaudRateSet UART1_BaudRateSet
+#define UART1_Drv_BaudRateSet UART1_BaudRateSet
 
 /**
  * @ingroup  uartdriver
  * @brief    This macro defines the Custom Name for \ref UART1_BaudRateGet API
  */
-#define UART_Serial_BaudRateGet UART1_BaudRateGet
+#define UART1_Drv_BaudRateGet UART1_BaudRateGet
+
+/**
+ * @ingroup  uartdriver
+ * @brief    This macro defines the Custom Name for \ref UART1_RxCompleteCallbackRegister API
+ */
+#define UART1_Drv_RxCompleteCallbackRegister  UART1_RxCompleteCallbackRegister
+
+/**
+ * @ingroup  uartdriver
+ * @brief    This macro defines the Custom Name for \ref UART1_TxCompleteCallbackRegister API
+ */
+#define UART1_Drv_TxCompleteCallbackRegister  UART1_TxCompleteCallbackRegister
+
+/**
+ * @ingroup  uartdriver
+ * @brief    This macro defines the Custom Name for \ref UART1_TxCollisionCallbackRegister API
+ */
+#define UART1_Drv_TxCollisionCallbackRegister  UART1_TxCollisionCallbackRegister
+
+/**
+ * @ingroup  uartdriver
+ * @brief    This macro defines the Custom Name for \ref UART1_FramingErrorCallbackRegister API
+ */
+#define UART1_Drv_FramingErrorCallbackRegister  UART1_FramingErrorCallbackRegister
+
+/**
+ * @ingroup  uartdriver
+ * @brief    This macro defines the Custom Name for \ref UART1_OverrunErrorCallbackRegister API
+ */
+#define UART1_Drv_OverrunErrorCallbackRegister  UART1_OverrunErrorCallbackRegister
+
+/**
+ * @ingroup  uartdriver
+ * @brief    This macro defines the Custom Name for \ref UART1_ParityErrorCallbackRegister API
+ */
+#define UART1_Drv_ParityErrorCallbackRegister  UART1_ParityErrorCallbackRegister
 
 // Section: UART1 Driver Routines
 
@@ -178,10 +214,10 @@ void UART1_Deinitialize(void);
 /**
  * @ingroup  uartdriver
  * @brief    Reads a byte of data from the UART1
- * @pre      UART1_Initialize function should have been called
- *           before calling this function. The transfer status should be checked
- *           to see  if the receiver is not empty before calling this function.
- * @return   A data byte received by the driver
+ * @pre      Check receive status using \ref UART1_IsRxReady function
+ *           before calling this function or call this function within the 
+ *           \ref UART1_RxCompleteCallback. 
+ * @return   A data byte received by the driver.
  */
 uint8_t UART1_Read(void);
 
@@ -298,5 +334,120 @@ uint32_t UART1_BaudRateGet(void);
  */
 size_t UART1_ErrorGet(void);
 
+/**
+ * @ingroup         uartdriver
+ * @brief           This function can be used to override default callback 
+ *                  \ref UART1_RxCompleteCallback and to define custom callback for 
+ *                  UART1 RxComplete event.
+ * @param[in][out]  Address of the callback routine
+ * @return          none
+ */
+void UART1_RxCompleteCallbackRegister(void* handler);
+
+/**
+ * @ingroup  uartdriver
+ * @brief    This is the default callback with weak attribute. The user can 
+ *           override and implement the default callback without weak attribute 
+ *           or can register a custom callback function using UART1_RxCompleteCallbackRegister.
+ * @return   none
+ */
+void UART1_RxCompleteCallback(void);
+
+/**
+ * @ingroup         uartdriver
+ * @brief           This function can be used to override default callback 
+ *                  \ref UART1_TxCompleteCallback and to define custom callback for 
+ *                  UART1 TxComplete event.
+ * @param[in][out]  Address of the callback routine
+ * @return          none
+ */
+void __attribute__((deprecated("\nThis will be removed in future MCC releases."))) UART1_TxCompleteCallbackRegister(void* handler);
+
+/**
+ * @ingroup  uartdriver
+ * @brief    This is the default callback with weak attribute. The user can 
+ *           override and implement the default callback without weak attribute 
+ *           or can register a custom callback function using UART1_TxCompleteCallbackRegister.
+ * @return   none
+ * @note            This callback is triggerred if there is data in the software buffer and there is atleast 
+ *                  one byte space in hardware transmit FIFO 
+ */
+void __attribute__((deprecated("\nThis will be removed in future MCC releases."))) UART1_TxCompleteCallback(void);
+
+/**
+ * @ingroup         uartdriver
+ * @brief           This function can be used to override default callback 
+ *                  \ref UART1_TxCollisionCallback and to define custom callback for 
+ *                  UART1 TxCollision event.
+ * @param[in][out]  Address of the callback routine
+ * @return          none
+ */
+void UART1_TxCollisionCallbackRegister(void* handler);
+
+/**
+ * @ingroup  uartdriver
+ * @brief    This is the default callback with weak attribute. The user can 
+ *           override and implement the default callback without weak attribute 
+ *           or can register a custom callback function using UART1_TxCollisionCallbackRegister.
+ * @return   none
+ */
+void UART1_TxCollisionCallback(void);
+
+/**
+ * @ingroup         uartdriver
+ * @brief           This function can be used to override default callback 
+ *                  \ref UART1_FramingErrorCallback and to define custom callback for 
+ *                  UART1 FramingError event.
+ * @param[in][out]  Address of the callback routine
+ * @return          none
+ */
+void UART1_FramingErrorCallbackRegister(void* handler);
+
+/**
+ * @ingroup  uartdriver
+ * @brief    This is the default callback with weak attribute. The user can 
+ *           override and implement the default callback without weak attribute 
+ *           or can register a custom callback function using UART1_FramingErrorCallbackRegister.
+ * @return   none
+ */
+void UART1_FramingErrorCallback(void);
+
+/**
+ * @ingroup         uartdriver
+ * @brief           This function can be used to override default callback 
+ *                  \ref UART1_OverrunErrorCallback and to define custom callback for 
+ *                  UART1 OverrunError event.
+ * @param[in][out]  Address of the callback routine
+ * @return          none
+ */
+void UART1_OverrunErrorCallbackRegister(void* handler);
+
+/**
+ * @ingroup  uartdriver
+ * @brief    This is the default callback with weak attribute. The user can 
+ *           override and implement the default callback without weak attribute 
+ *           or can register a custom callback function using UART1_OverrunErrorCallbackRegister.
+ * @return   none
+ */
+void UART1_OverrunErrorCallback(void);
+
+/**
+ * @ingroup         uartdriver
+ * @brief           This function can be used to override default callback 
+ *                  \ref UART1_ParityErrorCallback and to define custom callback for 
+ *                  UART1 ParityError event.
+ * @param[in][out]  Address of the callback routine
+ * @return          none
+ */
+void UART1_ParityErrorCallbackRegister(void* handler);
+
+/**
+ * @ingroup  uartdriver
+ * @brief    This is the default callback with weak attribute. The user can 
+ *           override and implement the default callback without weak attribute 
+ *           or can register a custom callback function using UART1_ParityErrorCallbackRegister.
+ * @return   none
+ */
+void UART1_ParityErrorCallback(void);
 #endif  // UART1_H
 

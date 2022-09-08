@@ -100,11 +100,6 @@ extern const struct SENT_RECEIVE_INTERFACE SENT_Receiver;
  * @brief    This macro defines the Custom Name for \ref SENT2_ErrorCallbackRegister API
  */
 #define SENT_Receiver_ErrorCallbackRegister SENT2_ErrorCallbackRegister
-/**
- * @ingroup  sentrxdriver
- * @brief    This macro defines the Custom Name for \ref SENT2_Tasks API
- */
-#define SENT_Receiver_Tasks SENT2_Tasks
 // Section: SENT2 Module APIs
  
 /**
@@ -196,12 +191,6 @@ void SENT2_ErrorCallbackRegister(void* handler);
 void SENT2_ErrorCallback(void);
 
 
-/**
- * @ingroup  sentrxdriver
- * @brief    This function is used to implement the tasks for polled implementations
- * @return   none  
- */
-void SENT2_Tasks(void);
 
 #endif  // SENT2_H
 /**

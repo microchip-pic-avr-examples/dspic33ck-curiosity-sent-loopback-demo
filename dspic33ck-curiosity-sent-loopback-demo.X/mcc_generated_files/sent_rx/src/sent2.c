@@ -59,19 +59,27 @@ const struct SENT_RECEIVE_INTERFACE SENT_Receiver = {
     .ReceiveStatusGet       = &SENT2_ReceiveStatusGet,
     .ReceiveCompleteCallbackRegister = &SENT2_ReceiveCompleteCallbackRegister,
     .ErrorCallbackRegister = &SENT2_ErrorCallbackRegister,
-    .Tasks                  = &SENT2_Tasks,
+    .Tasks                  = NULL,
 };
 
 // Section: SENT2 Module APIs
 
 void SENT2_Initialize(void)
 {
-    // PPP disabled; TXPOL Non Inverted; SNTSIDL disabled; PS Divide-by-1; SNTEN disabled; SPCEN disabled; TXM Asynchronous; CRCEN disabled; RCVEN Receiver; NIBCNT 6; 
-    SENT2CON1 = 0x806;
+    // PPP disabled; TXPOL Non Inverted; SNTSIDL disabled; PS Divide-by-1; SNTEN disabled; SPCEN disabled; TXM Asynchronous; CRCEN enabled; RCVEN Receiver; NIBCNT 6; 
+    SENT2CON1 = 0x906;
     // SENTCON2 115; 
     SENT2CON2 = 0x73;
     // SENTCON3 77; 
     SENT2CON3 = 0x4D;
+    // clear the rx/tx interrupt flag
+    IFS5bits.SENT2IF = 0;
+    // enable the rx/tx interrupt
+    IEC5bits.SENT2IE = 1;
+    // clear the error interrupt flag
+    IFS5bits.SENT2EIF = 0;
+    // enable the error interrupt
+    IEC5bits.SENT2EIE = 1;
     
     SENT2_ReceiveCompleteCallbackRegister(&SENT2_ReceiveCompleteCallback);
     SENT2_ErrorCallbackRegister(&SENT2_ErrorCallback);
@@ -82,6 +90,12 @@ void SENT2_Initialize(void)
 void SENT2_Deinitialize(void)
 {
     SENT2_Disable(); 
+    
+    IFS5bits.SENT2IF = 0;
+    IEC5bits.SENT2IE = 0;
+    
+    IFS5bits.SENT2EIF = 0;
+    IEC5bits.SENT2EIE = 0;
     
     SENT2CON1 = 0x0;
     SENT2CON2 = 0x0;
@@ -112,16 +126,13 @@ struct SENT_DATA_RECEIVE SENT2_Receive(void)
     {
       sentData.crc = SENT2DATLbits.CRC;
     }
+    bDataReceived = false;
     return sentData;
 }
 
 bool SENT2_IsDataReceived(void)
 {
-   while(IFS5bits.SENT2IF == 0)
-   {
-   }
-   IFS5bits.SENT2IF = 0;
-   return true;
+   return bDataReceived;
 }
 
 enum SENT_RECEIVE_STATUS SENT2_ReceiveStatusGet(void)
@@ -154,42 +165,33 @@ void __attribute__ ((weak)) SENT2_ErrorCallback(void)
    
 } 
 
-
-
-void SENT2_Tasks ( void )
+void __attribute__ ( ( interrupt, no_auto_psv ) ) _SENT2Interrupt( void )
 {
-    if(IFS5bits.SENT2IF == 1)
+    if(SENT2_ReceiveCompleteHandler != NULL )
     {
-        // SENT2 callback function 
-        if(SENT2_ReceiveCompleteHandler != NULL )
-        {
-            (*SENT2_ReceiveCompleteHandler)();
-        }
-        bDataReceived = true;
-        // clear the SENT2 interrupt flag
-        IFS5bits.SENT2IF = 0;
+        (*SENT2_ReceiveCompleteHandler)();
     }
-    if(IFS5bits.SENT2EIF == 1)
-    {
-        // SENT2 Error callback function 
-        if(SENT2_ErrorHandler != NULL )
-        {
-            (*SENT2_ErrorHandler)();
-        }
-        
-        if(SENT2STATbits.FRMERR == 1)
-        {
-            SENT2STATbits.FRMERR = 0;
-        }
-        if(SENT2STATbits.CRCERR == 1)
-        {
-            SENT2STATbits.CRCERR = 0;
-        }
-        
-        // clear the SENT2 IFS5bits.SENT2EIF interrupt flag
-        IFS5bits.SENT2EIF = 0;
-    }
+    bDataReceived = true;
+    IFS5bits.SENT2IF = 0;
 }
+
+void __attribute__ ( ( interrupt, no_auto_psv ) ) _SENT2EInterrupt (void)
+{
+    if(SENT2_ErrorHandler != NULL )
+    {
+        (*SENT2_ErrorHandler)();
+    }
+    if(SENT2STATbits.FRMERR == 1)
+    {
+        SENT2STATbits.FRMERR = 0;
+    }
+    if(SENT2STATbits.CRCERR == 1)
+    {
+        SENT2STATbits.CRCERR = 0;
+    }
+    IFS5bits.SENT2EIF = 0;
+}
+
 
 /**
  End of File

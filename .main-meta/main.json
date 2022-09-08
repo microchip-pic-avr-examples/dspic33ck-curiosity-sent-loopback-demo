@@ -35,11 +35,10 @@
          }
       },
 	  "peripherals":[
-         "GPIO"
+         "SENT"
       ],
       "keywords":[
-         "GPIO",
-         "UART"
+         "SENT",
       ]
    }
 }

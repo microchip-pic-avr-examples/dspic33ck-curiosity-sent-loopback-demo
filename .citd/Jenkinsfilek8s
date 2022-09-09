@@ -78,7 +78,9 @@ pipeline {
         
         stage('Build') {
             steps {
-                script {                   
+                script {
+					execute("npm install -g xml2js")
+					execute("npm link xml2js")				
                     mplabxProjectBuild(
                         sourceFilePath: "${env.MPLABX_PROJECT_SOURCE}"
                     )

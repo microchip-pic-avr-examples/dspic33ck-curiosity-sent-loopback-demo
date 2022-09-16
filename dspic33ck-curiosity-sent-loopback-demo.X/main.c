@@ -29,15 +29,19 @@
 #include "mcc_generated_files/sent_tx/sent1.h"
 #include "mcc_generated_files/sent_rx/sent2.h"
 
-
+//Macros
 #define FCY CLOCK_SystemFrequencyGet()
 
+//Structure Variables
 const volatile struct SENT_TRANSMIT_INTERFACE *sentTx = &SENT_Transmitter;
 const volatile struct SENT_RECEIVE_INTERFACE *sentRx = &SENT_Receiver;
+struct SENT_DATA_TRANSMIT sentDataTransmit;
+struct SENT_DATA_RECEIVE sentDataReceive;
 
 //Functions
 void SENT_TxRxInitialization();
 void SENT_TxRxDeInitialization();
+void SENT_PayloadConfiguration();
 bool SENT_TransmitReceive();
 bool SENT_WaitForTransmissionComplete(bool *result);
 bool SENT_WaitForReceptionComplete(bool *result);
@@ -49,11 +53,11 @@ static bool (*callbackResponseWaitHandler)(bool *status) = NULL;
 
 //Enums
 enum SENT_STATE{
-    SENT_START_STATE = 0,
+    SENT_INIT_STATE = 0,
     SENT_ASYNC_STATE = 1,
     SENT_SYNC_STATE = 2,
     SENT_DEINIT_STATE = 3,
-    SENT_EXIT_STATE = 4,
+    SENT_IDLE_STATE = 4,
 };
 
 /*
@@ -62,18 +66,21 @@ enum SENT_STATE{
 int main(void)
 {
     bool sent_status = false;
-    uint8_t current_state = (uint8_t)SENT_START_STATE;
+    uint8_t current_state = (uint8_t)SENT_INIT_STATE;
     SYSTEM_Initialize();
 
     while(1)
     {
         switch(current_state) 
        {    
-            case SENT_START_STATE:
-                //Start State
+            case SENT_INIT_STATE:
+                //Init State
                 printf("#########################################\r\n");
                 printf("           SENT LOOPBACK DEMO            \r\n");
-                printf("#########################################\r\n");
+                printf("#########################################\r\n\r\n");
+                printf("SENT Initialization Successful\r\n");
+                printf("------------------------------------------\r\n\r\n");
+                SENT_PayloadConfiguration();   //Set Payload Data for SENT (User Configurable)
                 __delay32(10000);
                 current_state = SENT_ASYNC_STATE;
                 break;
@@ -100,12 +107,13 @@ int main(void)
            case SENT_DEINIT_STATE:
                //Deinit State
                SENT_TxRxDeInitialization();
-               current_state = SENT_EXIT_STATE;
+               current_state = SENT_IDLE_STATE;
                printf("SENT De-Initialization Successful\r\n");
+               printf("------------------------------------------\r\n\r\n");
                printf("#########################################\r\n");
                break;
-            case SENT_EXIT_STATE:
-                //Exit State
+            case SENT_IDLE_STATE:
+                //Idle State
                 break;    
             default:
                 //Default State
@@ -124,6 +132,61 @@ void SENT_TxRxDeInitialization()
 {
     sentTx->Deinitialize();
     sentRx->Deinitialize();
+}
+
+void SENT_PayloadConfiguration()
+{
+    sentDataTransmit.status = 7;  //User Configurable
+    sentDataTransmit.data1 = 1;   //User Configurable
+    sentDataTransmit.data2 = 2;   //User Configurable
+    sentDataTransmit.data3 = 3;   //User Configurable
+    sentDataTransmit.data4 = 4;   //User Configurable
+    sentDataTransmit.data5 = 5;   //User Configurable
+    sentDataTransmit.data6 = 6;   //User Configurable
+}
+
+bool SENT_TransmitReceive()
+{
+    bool result = false;
+    bool txCompleteFlag = false;
+    bool rxCompleteFlag = false;
+    
+    sentTx->Transmit(&sentDataTransmit);
+    
+    txCompleteFlag = waitForCallbackTimeout(&SENT_WaitForTransmissionComplete,2000);
+    rxCompleteFlag = waitForCallbackTimeout(&SENT_WaitForReceptionComplete,2000);
+    
+    __delay32(1000);
+    
+    if((txCompleteFlag & rxCompleteFlag) == true)
+    {
+        sentDataReceive = sentRx->Receive();
+        result = compare(&sentDataTransmit, &sentDataReceive);
+        
+        return result;
+    }
+
+    return result;
+}
+
+bool SENT_WaitForTransmissionComplete(bool *result)
+{
+    if(sentTx->IsTransmissionComplete() == true)
+    {
+        *result = true;
+        return true;
+    }
+    return false;
+}
+
+bool SENT_WaitForReceptionComplete(bool *result)
+{
+    if(sentRx->IsDataReceived() == true)
+    {
+        *result = true;
+        return true;
+    }
+    return false;
 }
 
 bool compare(struct SENT_DATA_TRANSMIT *txdata, struct SENT_DATA_RECEIVE *rxdata)
@@ -158,61 +221,6 @@ bool compare(struct SENT_DATA_TRANSMIT *txdata, struct SENT_DATA_RECEIVE *rxdata
     }
     
     return status;
-}
-
-bool SENT_TransmitReceive()
-{
-    bool result = false;
-    bool txCompleteFlag = false;
-    bool rxCompleteFlag = false;
-    
-    struct SENT_DATA_TRANSMIT sentDataTransmit;
-    struct SENT_DATA_RECEIVE sentDataReceive;
-
-    sentDataTransmit.status = 7;
-    sentDataTransmit.data1 = 1;
-    sentDataTransmit.data2 = 2;
-    sentDataTransmit.data3 = 3;
-    sentDataTransmit.data4 = 4;
-    sentDataTransmit.data5 = 5;
-    sentDataTransmit.data6 = 6;
-
-    sentTx->Transmit(&sentDataTransmit);
-    
-    txCompleteFlag = waitForCallbackTimeout(&SENT_WaitForTransmissionComplete,2000);
-    rxCompleteFlag = waitForCallbackTimeout(&SENT_WaitForReceptionComplete,2000);
-    
-    __delay32(1000);
-    
-    if((txCompleteFlag & rxCompleteFlag) == true)
-    {
-        sentDataReceive = sentRx->Receive();
-        result = compare(&sentDataTransmit, &sentDataReceive);
-    
-        return result;
-    }
-
-    return result;
-}
-
-bool SENT_WaitForTransmissionComplete(bool *result)
-{
-    if(sentTx->IsTransmissionComplete() == true)
-    {
-        *result = true;
-        return true;
-    }
-    return false;
-}
-
-bool SENT_WaitForReceptionComplete(bool *result)
-{
-    if(sentRx->IsDataReceived() == true)
-    {
-        *result = true;
-        return true;
-    }
-    return false;
 }
 
 static bool softTimeOut(uint32_t intVal)

@@ -43,16 +43,16 @@ The project depicts the usage of SENT module demo with loopback data transfer fr
 
 ## MCC Configurations
 
-- SENT TX Configuration :
+- SENT TX Configuration : <br> 
 ![SentTx](images/sent_tx_config.PNG)
 
-- SENT RX Configuration :
+- SENT RX Configuration : <br> 
 ![Serial](images/sent_rx_config.PNG)
 
-- UART Configuration :
+- UART Configuration : <br> 
 ![Serial](images/uart_config.PNG)
 
-- Pins Configuration :
+- Pins Configuration : <br> 
 ![Pins](images/pins_config.png)
 
 
@@ -60,8 +60,9 @@ The project depicts the usage of SENT module demo with loopback data transfer fr
 ## Operation
 
 - The demo auto triggers two operation modes of SENT - Asynchronous and Synchronous, once you program the device.
+- The very first state is the Initialization state where the user configurable SENT Payload details are being initialized. User can edit the data inside the function if required.
 - In Asynchronous mode operation where the SENT_TX sends the data and SENT_RX peripheral receives the same data. On success the result will be printed on terminal and green LED starts glowing.
 - Succeeding the state comes the Synchronous mode of operation, which also sends the data from SENT_Transmitter and receives in SENT_Receiver. On success the result will be printed on terminal and green LED starts glowing.
-- Finally the deinitialization state comes where the peripherals would get properly deinitialized. 
+- Finally the deinitialization state comes where the peripherals would get properly deinitialized.  <br> 
 ![SerialOutput](images/serial_output.PNG)
 

@@ -67,8 +67,8 @@ const struct SENT_TRANSMIT_INTERFACE SENT_Transmitter = {
 
 void SENT1_Initialize(void)
 {
-    // PPP disabled; TXPOL Non Inverted; SNTSIDL disabled; PS Divide-by-1; SNTEN disabled; SPCEN disabled; TXM Asynchronous; CRCEN enabled; RCVEN Transmitter; NIBCNT 6; 
-    SENT1CON1 = 0x106;
+    // PPP disabled; TXPOL Inverted; SNTSIDL disabled; PS Divide-by-1; SNTEN disabled; SPCEN disabled; TXM Asynchronous; CRCEN enabled; RCVEN Transmitter; NIBCNT 6; 
+    SENT1CON1 = 0x306;
     // SENTCON2 11; 
     SENT1CON2 = 0xB;
     // SENTCON3 0x0; 

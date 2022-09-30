@@ -39,8 +39,8 @@ struct SENT_DATA_RECEIVE sentDataReceive;
 void SENT_TxRxInitialization();
 void SENT_TxRxDeInitialization();
 void SENT_AsyncPayloadConfiguration();
-bool SENT_AsyncTransmitReceive();
-bool SENT_SyncTransmitReceive();
+bool SENT_AsyncTransmitReceiveStatus();
+bool SENT_SyncTransmitReceiveStatus();
 
 bool PrintPayloadData(struct SENT_DATA_TRANSMIT *txdata, struct SENT_DATA_RECEIVE *rxdata);
 bool CompareTxRxPayloadData(struct SENT_DATA_TRANSMIT *txdata, struct SENT_DATA_RECEIVE *rxdata);
@@ -96,7 +96,7 @@ int main(void)
                 //Async State
                sentTx->TransmitModeSet(SENT_TRANSMIT_ASYNCHRONOUS); //Set Transmit Mode to ASYNCHRONOUS
                sentTx->Transmit(&sentDataTransmit);
-               sent_status = WaitForCallbackTimeout(&SENT_AsyncTransmitReceive,100); //SENT Transmit & Receive 
+               sent_status = WaitForCallbackTimeout(&SENT_AsyncTransmitReceiveStatus,100); //SENT Transmit & Receive 
                sent_status ? UserLEDGreen_SetHigh() : UserLEDRed_SetHigh();
                sent_status ? printf("SENT Asynchronous Communication Success\r\n") : printf("SENT Asynchronous Communication Unsuccessful\r\n"); 
                printf("------------------------------------------\r\n\r\n");
@@ -109,7 +109,7 @@ int main(void)
                SENT_SyncPayloadConfiguration();  //Update new set of SENT Payload values (User Configurable) 
                sentTx->TransmitModeSet(SENT_TRANSMIT_SYNCHRONOUS); //Set Transmit Mode to SYNCHRONOUS
                sentTx->Transmit(&sentDataTransmit);
-               sent_status = WaitForCallbackTimeout(&SENT_SyncTransmitReceive,100); //SENT Transmit & Receive 
+               sent_status = WaitForCallbackTimeout(&SENT_SyncTransmitReceiveStatus,100); //SENT Transmit & Receive 
                sent_status ? UserLEDGreen_SetHigh() : UserLEDRed_SetHigh();
                sent_status ? printf("SENT Synchronous Communication Success\r\n") : printf("SENT Synchronous Communication Unsuccessful\r\n");
                printf("------------------------------------------\r\n\r\n");
@@ -178,7 +178,7 @@ void SENT_SyncPayloadConfiguration()
     sentDataTransmit.data6 = 1;   //User Configurable
 }
 
-bool SENT_AsyncTransmitReceive(bool *result)
+bool SENT_AsyncTransmitReceiveStatus(bool *result)
 {
     *result = false;
     
@@ -194,7 +194,7 @@ bool SENT_AsyncTransmitReceive(bool *result)
     return *result;
 }
 
-bool SENT_SyncTransmitReceive(bool *result)
+bool SENT_SyncTransmitReceiveStatus(bool *result)
 {
     *result = false;
     bool isSyncTxComplete = false;

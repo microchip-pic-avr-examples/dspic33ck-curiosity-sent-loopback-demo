@@ -95,6 +95,7 @@ int main(void)
             case SENT_ASYNC_STATE:
                 //Async State
                sentTx->TransmitModeSet(SENT_TRANSMIT_ASYNCHRONOUS); //Set Transmit Mode to ASYNCHRONOUS
+               sentTx->Transmit(&sentDataTransmit);
                sent_status = WaitForCallbackTimeout(&SENT_AsyncTransmitReceive,100); //SENT Transmit & Receive 
                sent_status ? UserLEDGreen_SetHigh() : UserLEDRed_SetHigh();
                sent_status ? printf("SENT Asynchronous Communication Success\r\n") : printf("SENT Asynchronous Communication Unsuccessful\r\n"); 
@@ -105,8 +106,9 @@ int main(void)
            case SENT_SYNC_STATE:
                //Sync State
                SENT_TxRxInitialization();   //Initialize SENT again
-               SENT_SyncPayloadConfiguration();  //Update new set of SENT Payload values (User Configurable)
+               SENT_SyncPayloadConfiguration();  //Update new set of SENT Payload values (User Configurable) 
                sentTx->TransmitModeSet(SENT_TRANSMIT_SYNCHRONOUS); //Set Transmit Mode to SYNCHRONOUS
+               sentTx->Transmit(&sentDataTransmit);
                sent_status = WaitForCallbackTimeout(&SENT_SyncTransmitReceive,100); //SENT Transmit & Receive 
                sent_status ? UserLEDGreen_SetHigh() : UserLEDRed_SetHigh();
                sent_status ? printf("SENT Synchronous Communication Success\r\n") : printf("SENT Synchronous Communication Unsuccessful\r\n");
@@ -180,8 +182,6 @@ bool SENT_AsyncTransmitReceive(bool *result)
 {
     *result = false;
     
-    sentTx->Transmit(&sentDataTransmit);
-    
     if((isTxCompleteFlag && isRxCompleteFlag) == true)
     {
         sentDataReceive = sentRx->Receive();
@@ -199,8 +199,6 @@ bool SENT_SyncTransmitReceive(bool *result)
     *result = false;
     bool isSyncTxComplete = false;
     bool isSyncRxComplete = false;
-    
-    sentTx->Transmit(&sentDataTransmit);
 
     isSyncTxComplete = sentTx->IsTransmissionComplete();
     isSyncRxComplete = sentRx->IsDataReceived();
@@ -291,7 +289,7 @@ bool WaitForCallbackTimeout(bool (*handler)(bool *status), uint32_t timeOut)
         } 
         else 
         {
-            printf("[!] Did not registere test callback function...\r\n");
+            printf("[!] Did not register test callback function...\r\n");
             break;
         }
 

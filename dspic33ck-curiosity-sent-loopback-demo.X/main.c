@@ -42,15 +42,15 @@ void SENT_AsyncPayloadConfiguration();
 bool SENT_AsyncTransmitReceive();
 bool SENT_SyncTransmitReceive();
 
-bool printPayloadData(struct SENT_DATA_TRANSMIT *txdata, struct SENT_DATA_RECEIVE *rxdata);
-bool compare(struct SENT_DATA_TRANSMIT *txdata, struct SENT_DATA_RECEIVE *rxdata);
-bool waitForCallbackTimeout(bool (*handler)(bool *status), uint32_t timeOut);
+bool PrintPayloadData(struct SENT_DATA_TRANSMIT *txdata, struct SENT_DATA_RECEIVE *rxdata);
+bool CompareTxRxPayloadData(struct SENT_DATA_TRANSMIT *txdata, struct SENT_DATA_RECEIVE *rxdata);
+bool WaitForCallbackTimeout(bool (*handler)(bool *status), uint32_t timeOut);
 
-static bool softTimeOut(uint32_t intVal);
+static bool SoftTimeOut(uint32_t interval);
 static bool (*callbackResponseWaitHandler)(bool *status) = NULL;
 
-void TxComplete_CB();
-void RxComplete_CB();
+void TxComplete_Callback();
+void RxComplete_Callback();
 
 //Variables
 bool isTxCompleteFlag = false;
@@ -88,14 +88,14 @@ int main(void)
                 printf("------------------------------------------\r\n\r\n");
                 SENT_TxRxInitialization();
                 SENT_AsyncPayloadConfiguration();   //Set Payload Data for SENT (User Configurable)
-                sentTx->TransmitCompleteCallbackRegister(&TxComplete_CB);   //Register Callback Function for Transmit Complete
-                sentRx->ReceiveCompleteCallbackRegister(&RxComplete_CB);    //Register Callback Function for Receive Complete
+                sentTx->TransmitCompleteCallbackRegister(&TxComplete_Callback);   //Register Callback Function for Transmit Complete
+                sentRx->ReceiveCompleteCallbackRegister(&RxComplete_Callback);    //Register Callback Function for Receive Complete
                 current_state = SENT_ASYNC_STATE;
                 break;
             case SENT_ASYNC_STATE:
                 //Async State
                sentTx->TransmitModeSet(SENT_TRANSMIT_ASYNCHRONOUS); //Set Transmit Mode to ASYNCHRONOUS
-               sent_status = waitForCallbackTimeout(&SENT_AsyncTransmitReceive,100); //SENT Transmit & Receive 
+               sent_status = WaitForCallbackTimeout(&SENT_AsyncTransmitReceive,100); //SENT Transmit & Receive 
                sent_status ? UserLEDGreen_SetHigh() : UserLEDRed_SetHigh();
                sent_status ? printf("SENT Asynchronous Communication Success\r\n") : printf("SENT Asynchronous Communication Unsuccessful\r\n"); 
                printf("------------------------------------------\r\n\r\n");
@@ -107,7 +107,7 @@ int main(void)
                SENT_TxRxInitialization();   //Initialize SENT again
                SENT_SyncPayloadConfiguration();  //Update new set of SENT Payload values (User Configurable)
                sentTx->TransmitModeSet(SENT_TRANSMIT_SYNCHRONOUS); //Set Transmit Mode to SYNCHRONOUS
-               sent_status = waitForCallbackTimeout(&SENT_SyncTransmitReceive,100); //SENT Transmit & Receive 
+               sent_status = WaitForCallbackTimeout(&SENT_SyncTransmitReceive,100); //SENT Transmit & Receive 
                sent_status ? UserLEDGreen_SetHigh() : UserLEDRed_SetHigh();
                sent_status ? printf("SENT Synchronous Communication Success\r\n") : printf("SENT Synchronous Communication Unsuccessful\r\n");
                printf("------------------------------------------\r\n\r\n");
@@ -132,12 +132,12 @@ int main(void)
     }    
 }
 
-void TxComplete_CB()
+void TxComplete_Callback()
 {
     isTxCompleteFlag = true;
 }
 
-void RxComplete_CB()
+void RxComplete_Callback()
 {
     isRxCompleteFlag = true; 
 }
@@ -178,26 +178,28 @@ void SENT_SyncPayloadConfiguration()
 
 bool SENT_AsyncTransmitReceive(bool *result)
 {
+    *result = false;
+    
     sentTx->Transmit(&sentDataTransmit);
     
     if((isTxCompleteFlag && isRxCompleteFlag) == true)
     {
         sentDataReceive = sentRx->Receive();
-        *result = compare(&sentDataTransmit, &sentDataReceive);
-        printPayloadData(&sentDataTransmit, &sentDataReceive);
+        *result = CompareTxRxPayloadData(&sentDataTransmit, &sentDataReceive);
+        PrintPayloadData(&sentDataTransmit, &sentDataReceive);
         isTxCompleteFlag = false;
         isRxCompleteFlag = false;
-        return *result;
     }
-    *result = false;
-    return false;
+    
+    return *result;
 }
 
 bool SENT_SyncTransmitReceive(bool *result)
 {
-    
+    *result = false;
     bool isSyncTxComplete = false;
     bool isSyncRxComplete = false;
+    
     sentTx->Transmit(&sentDataTransmit);
 
     isSyncTxComplete = sentTx->IsTransmissionComplete();
@@ -206,17 +208,16 @@ bool SENT_SyncTransmitReceive(bool *result)
     if((isSyncTxComplete && isSyncRxComplete) == true)
     {
         sentDataReceive = sentRx->Receive();
-        *result = compare(&sentDataTransmit, &sentDataReceive);
-        printPayloadData(&sentDataTransmit, &sentDataReceive);
+        *result = CompareTxRxPayloadData(&sentDataTransmit, &sentDataReceive);
+        PrintPayloadData(&sentDataTransmit, &sentDataReceive);
         isSyncTxComplete = false;
         isSyncRxComplete = false;
-        return *result;
     }
-    *result = false;
-    return false;
+
+    return *result;
 }
 
-bool printPayloadData(struct SENT_DATA_TRANSMIT *txdata, struct SENT_DATA_RECEIVE *rxdata)
+bool PrintPayloadData(struct SENT_DATA_TRANSMIT *txdata, struct SENT_DATA_RECEIVE *rxdata)
 {
     printf("-------------------------------------------------\r\n");
     printf("|  PAYLOAD   |   DATA SENT    |  DATA RECEIVED  |\r\n");
@@ -231,45 +232,40 @@ bool printPayloadData(struct SENT_DATA_TRANSMIT *txdata, struct SENT_DATA_RECEIV
     printf("-------------------------------------------------\r\n\r\n");
 }
 
-bool compare(struct SENT_DATA_TRANSMIT *txdata, struct SENT_DATA_RECEIVE *rxdata)
+bool CompareTxRxPayloadData(struct SENT_DATA_TRANSMIT *txdata, struct SENT_DATA_RECEIVE *rxdata)
 {
     bool status = true;
+    
     if (txdata->status != rxdata->status) {
         status = false;
-    }
-    
-    if (txdata->data1 != rxdata->data1) {
+    }    
+    else if (txdata->data1 != rxdata->data1) {
+        status = false;
+    }   
+    else if (txdata->data2 != rxdata->data2) {
         status = false;
     }
-    
-    if (txdata->data2 != rxdata->data2) {
+    else if (txdata->data3 != rxdata->data3) {
         status = false;
     }
-    
-    if (txdata->data3 != rxdata->data3) {
+    else if (txdata->data4 != rxdata->data4) {
         status = false;
     }
-    
-    if (txdata->data4 != rxdata->data4) {
+    else if (txdata->data5 != rxdata->data5) {
         status = false;
     }
-    
-    if (txdata->data5 != rxdata->data5) {
+    else if (txdata->data6 != rxdata->data6) {
         status = false;
     }
-    
-    if (txdata->data6 != rxdata->data6) {
-        status = false;
-    }
-    
+   
     return status;
 }
 
-static bool softTimeOut(uint32_t intVal)
+static bool SoftTimeOut(uint32_t interval)
 {
     static uint32_t count = 0;
     
-    if(count >= intVal)
+    if(count >= interval)
     {
         count = 0;
         return true;
@@ -279,7 +275,7 @@ static bool softTimeOut(uint32_t intVal)
     return false;
 }
 
-bool waitForCallbackTimeout(bool (*handler)(bool *status), uint32_t timeOut)
+bool WaitForCallbackTimeout(bool (*handler)(bool *status), uint32_t timeOut)
 {
     callbackResponseWaitHandler = handler;
     bool res = false;
@@ -295,13 +291,13 @@ bool waitForCallbackTimeout(bool (*handler)(bool *status), uint32_t timeOut)
         } 
         else 
         {
-            printf("[!] Did not registered test callback function...\r\n");
+            printf("[!] Did not registere test callback function...\r\n");
             break;
         }
 
-        if(softTimeOut(timeOut) == true)
+        if(SoftTimeOut(timeOut) == true)
         {
-            printf("[!] Timeout occurred!.Check your loopback connection.\r\n");
+            printf("[!] Timeout occurred!.\r\n");
             break;
         }
     }

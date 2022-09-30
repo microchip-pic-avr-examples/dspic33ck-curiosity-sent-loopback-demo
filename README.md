@@ -41,6 +41,17 @@ The project depicts the usage of SENT module demo with loopback data transfer fr
 ![Serial](images/serial_config.PNG) <br> 
 ![SerialPort](images/serial_port_config.PNG)
 
+## Operation
+
+- The demo auto triggers two operation modes of SENT - Asynchronous and Synchronous, once the device is programmed.
+- The very first state is the Initialization state where the user configurable SENT Payload details are being initialized. User can edit the data inside the function if required.
+- In Asynchronous mode operation where the SENT_TX sends the data and SENT_RX peripheral receives the same data. On success the result will be printed on terminal and green LED starts glowing.
+- Succeeding the state is the Synchronous mode of operation, which also sends the data from SENT_Transmitter and receives in SENT_Receiver. On success, the result will be printed on terminal and green LED starts glowing.
+- Finally the SENT peripherals are reset to POR (Power On Reset) state at the deinitialization.  
+- Note that printf() is redirected to UART1 by the compiler for this device <br> 
+![SerialOutput](images/serial_output.PNG)
+
+
 ## MCC Configurations
 
 - SENT TX Configuration : <br> 
@@ -53,16 +64,5 @@ The project depicts the usage of SENT module demo with loopback data transfer fr
 ![Serial](images/uart_config.PNG)
 
 - Pins Configuration : <br> 
-![Pins](images/pins_config.png)
-
-
-
-## Operation
-
-- The demo auto triggers two operation modes of SENT - Asynchronous and Synchronous, once you program the device.
-- The very first state is the Initialization state where the user configurable SENT Payload details are being initialized. User can edit the data inside the function if required.
-- In Asynchronous mode operation where the SENT_TX sends the data and SENT_RX peripheral receives the same data. On success the result will be printed on terminal and green LED starts glowing.
-- Succeeding the state comes the Synchronous mode of operation, which also sends the data from SENT_Transmitter and receives in SENT_Receiver. On success the result will be printed on terminal and green LED starts glowing.
-- Finally the deinitialization state comes where the peripherals would get properly deinitialized.  <br> 
-![SerialOutput](images/serial_output.PNG)
+![Pins](images/pins_config.png) 
 

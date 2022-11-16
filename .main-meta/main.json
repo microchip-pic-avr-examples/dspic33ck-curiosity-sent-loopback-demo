@@ -22,10 +22,10 @@
       },
 	  "configurator": {
          "name": "MCC",
-         "semverRange": ">=5.1.9"
+         "semverRange": ">=5.1.17"
       },
       "device":{
-         "metaDataVersion":"5.1.17",
+         "metaDataVersion":"1.0.0",
          "category":"com.microchip.portal.contentRef",
          "content":{
             "metaDataVersion":"1.0.0",
